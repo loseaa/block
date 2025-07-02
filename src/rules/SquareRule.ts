@@ -4,7 +4,7 @@ import options from "../options/config";
 import { Square } from "../entities/Square";
 export class SquareRule{
     static canMove(sqGroup:SquareGroup,targetPoint:Point,exists:Square[]):boolean{
-        if(sqGroup.shape.some(p=> p.x+targetPoint.x<0 || p.x+targetPoint.x>options.ground.width || p.y+targetPoint.y>options.ground.height))
+        if(sqGroup.shape.some(p=> p.x+targetPoint.x<0 || p.x+targetPoint.x>=options.ground.width || p.y+targetPoint.y>=options.ground.height))
         return false; //if the square is out of the ground return false, else return true.
         if(sqGroup.shape.some(q => 
             exists.some(exist =>exist.point.x===q.x+targetPoint.x&& exist.point.y===q.y+targetPoint.y    )
@@ -45,11 +45,16 @@ export class SquareRule{
         let res=sq.afterRotate();
         if(res.some(p=> p.x+sq.centerpoint.x<0 || p.x+sq.centerpoint.x>=options.ground.width || p.y+sq.centerpoint.y>=options.ground.height)){
             return false;}
-        if(res.some(q => exists.some(exist =>exist.point.x===q.x&& exist.point.y===q.y ) )){
+        if(res.some(q => exists.some(exist =>exist.point.x===q.x+sq.centerpoint.x&& exist.point.y===q.y+sq.centerpoint.y ) )){
             return false;
         }
 
         return true;
+    }
+
+    static resetCenterPoint(sqGroup:SquareGroup,height:number,width:number){
+        let centerpoint:Point={x:Math.floor(width/2),y:0};
+        sqGroup.centerpoint=centerpoint;
     }
 
     static rotate(sq:SquareGroup,exist:Square[]):boolean{

@@ -19,6 +19,7 @@ export class Game{
 
     update(){
         this._currentGroup=this._nextGroup;
+        SquareRule.resetCenterPoint(this._currentGroup,config.ground.height,config.ground.width);
         if(SquareRule.isOver(this._currentGroup!,this._exist))
         {
             this.over();
@@ -27,6 +28,7 @@ export class Game{
         
 
     }
+
 
     over(){
         console.log("over");
@@ -48,27 +50,39 @@ export class Game{
     // 触底检测
     touchBottom(){
         this._exist.push(...this._currentGroup!.squares);
-        if(this.need2Remove()){
-            this.removeBottomLine();
-            this._exist.forEach(sq=>{
-                sq.point={x:sq.point.x,y:sq.point.y+1}
+        let removelines=this.need2Remove();
+        if(removelines.length>0){
+            removelines.forEach(index=>{
+                this.removeLine(index);
             })
+            this._exist.forEach(sq=>{
+                sq.point={
+                    x:sq.point.x,
+                    y:sq.point.y+removelines.length
+                }
+            })
+
         }
+
         this.update();
         this._viewer.update(this._currentGroup!,this._nextGroup);
     }
 
-    need2Remove():boolean{
-        let bottom=this._exist.filter(sq=>sq.point.y===config.ground.height); //filter the squares that are at the bottom of the ground, and return the squares that are at the bottom of the ground.
-        if(bottom.length===config.ground.width+1) return true; //if there is no square at the bottom of the ground, return false.
-        
-        return false;
+    need2Remove():number[]{
+        let removelines=[]
+        for(let i=0;i<config.ground.height;i++){
+            let line=this._exist.filter(sq=>sq.point.y===i); //filter the squares that are at the same line, and return the squares that are at the same line.
+            if(line.length===config.ground.width-1){ //if the number of squares at the same line is equal to the width of the ground, return true.
+                removelines.push(i); //push the line number to the removelines array.
+            }
+        }
+        return removelines;
     }
 
     // 消除底部一行
-    removeBottomLine(){
-        let bottom=this._exist.filter(sq=>sq.point.y===config.ground.height);
-        bottom.forEach(sq=>{
+    removeLine(index:number){
+        let line=this._exist.filter(sq=>sq.point.y===index);
+        line.forEach(sq=>{
             sq.view.hide(); //hide the square, and remove it from the exist array.
             this._exist.splice(this._exist.indexOf(sq),1);
         })

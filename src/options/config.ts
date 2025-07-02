@@ -4,7 +4,11 @@ export default {
     width:50
    },
    ground:{
-      height:14,
-      width:14,
+      height:10,
+      width:10,
+   },
+   tip:{
+      height:5,
+      width:5,
    }
 }
