@@ -1,0 +1,13 @@
+# 依赖目录
+node_modules/
+,gitignore
+
+# 环境变量文件
+.env
+
+# 构建输出目录
+dist/
+
+# IDE配置文件
+.vscode/
+.idea/
